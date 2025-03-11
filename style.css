@@ -1,0 +1,881 @@
+/* General Styles */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #2c3e50, #27ae60);
+    color: white;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    overflow-y: auto;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-bottom: 30px;
+}
+
+.title {
+    text-align: center;
+    font-size: 3em;
+    font-weight: bold;
+    margin: 15px 0;
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 2px;
+    background: linear-gradient(90deg, #2ecc71, #27ae60, #16a085);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.2);
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    grid-column: span 3;
+    font-size: 2em;
+}
+
+.map {
+    width: 100%;
+    height: 200px;
+    background: url('city_clean.png') no-repeat center/cover;
+    transition: background 0.5s ease-in-out;
+    border-radius: 10px;
+}
+
+/* Buttons */
+.upgrade, .reset, .shop button, .btn-reset {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.upgrade:hover, .reset:hover, .btn-reset:hover {
+    background: #2980b9;
+}
+
+.shop .btn-green { background: #27ae60; }
+.shop .btn-yellow { background: #f1c40f; color: black; }
+.shop .btn-blue { background: #3498db; }
+.shop .btn-orange { background: #b37004; }
+.shop .btn-purple { background: #8e44ad; }
+
+.reset {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #e74c3c;
+}
+
+.reset:hover {
+    background: #c0392b;
+}
+
+.btn-reset {
+    width: 80%; /* Réduit la largeur du bouton */
+    max-width: 300px; /* Évite qu'il devienne trop large */
+    padding: 12px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 20px !important;
+    box-shadow: 0px 3px 8px rgba(231, 76, 60, 0.5);
+    background: #c0392b !important;
+}
+
+.btn-reset:hover {
+    background: #c0392b !important;
+    box-shadow: 0px 5px 12px rgba(231, 76, 60, 0.7);
+}
+
+.btn-reset:active {
+    transform: scale(0.95);
+    box-shadow: 0px 2px 6px rgba(231, 76, 60, 0.4);
+}
+
+/* Progress Bars */
+.progress-bar {
+    width: 100%;
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #2ecc71;
+    width: 0%;
+    transition: width 0.5s;
+}
+
+.progress-fill.success {
+    animation: successGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes successGlow {
+    0% { box-shadow: 0 0 10px #f39c12; }
+    50% { box-shadow: 0 0 25px #f1c40f; }
+    100% { box-shadow: 0 0 10px #f39c12; }
+}
+
+/* Sections */
+.section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 120px;
+    overflow: hidden;
+    max-height: 500px;
+}
+
+.section.events, .section.objectives {
+    max-width: 100%;
+    overflow: hidden;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+.section.events #eventLog {
+    max-width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+/* 
+.section.events #eventLog li {
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    box-sizing: border-box;
+} */
+
+/* Shop */
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center; /* Centrer les éléments */
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1280px;
+    margin-top: 10px;
+    gap: 10px;
+    overflow-x: hidden; /* Empêche le dépassement */
+}
+
+
+
+.shop {
+    width: 250px;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* RESPONSIVE - Place la shop en colonne sous le clicker sur mobile */
+@media (max-width: 1024px) {
+    .shop {
+        width: 100%;
+        max-width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center; /* Centre bien les éléments */
+        align-items: center;
+        max-width: 100%;
+        overflow-x: hidden; /* Empêche tout dépassement horizontal */
+    }
+
+    .shop-item {
+        flex: 1 1 45%; /* Deux colonnes */
+        min-width: 120px;
+        max-width: 200px;
+        margin: 5px;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .shop {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .shop-item {
+        width: 80%; /* Ajuste la largeur des cartes */
+        max-width: 350px; /* Évite qu'elles dépassent */
+        margin: 10px auto; /* Centrage horizontal */
+        text-align: center;
+        box-sizing: border-box; /* Évite le débordement */
+    }
+}
+
+
+
+.shop-item {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    width: 90%;
+    text-align: center;
+    transition: 0.3s;
+    box-shadow: 0px 0px 5px rgba(255, 255, 255, 0.2);
+    align-items: center;
+    
+}
+
+.shop-item:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.shop button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: filter 0.3s ease, transform 0.2s ease;
+    position: relative; /* Important pour que l'overlay soit bien positionné */
+    overflow: hidden; /* Pour éviter que l'overlay déborde */
+}
+
+.shop button:hover {
+    opacity: 0.8;
+    filter: brightness(1.3); /* Éclaircissement subtil et doux */
+    transform: translateY(-3px); /* Effet léger de flottement */
+}
+
+.shop button:active {
+    transform: scale(0.95);
+    filter: brightness(1.5);
+}
+
+/* Container */
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, min-content);
+    gap: 10px;
+    flex-grow: 1;
+}
+
+/* RESPONSIVE - Met en colonne sur mobile */
+@media (max-width: 1024px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+    }
+}
+
+
+.clicker-container {
+    grid-column: 1;
+    grid-row: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
+    min-height: 150px;
+}
+
+.inventory {
+    grid-column: 1;
+    grid-row: 3;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: -25px;
+}
+
+.inventory h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #f1c40f;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+}
+
+.inventory p {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2em;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.inventory p::before {
+    font-size: 1.3em;
+    margin-right: 10px;
+}
+
+.stats {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    width: auto;
+}
+
+.stats-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.stat-card {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    width: 100px;
+    height: 80px;
+    box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stat-card .emoji {
+    font-size: 1.5em;
+    line-height: 1;
+}
+
+.stat-card:hover {
+    transform: scale(1.1);
+}
+
+.stat-card p {
+    font-size: 0.85em;
+    font-weight: bold;
+    color: #f1c40f;
+    text-transform: uppercase;
+    margin-top: 10px;
+}
+
+.stat-card span {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    margin-top: auto;
+    margin-bottom: -2px;
+}
+
+.level-info {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.level-info p {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 5px 0;
+    color: #ecf0f1;
+}
+
+.xp-text {
+    font-size: 1em;
+    font-weight: normal;
+    color: #f39c12;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+    width: 0%;
+    transition: width 0.5s;
+}
+
+.objectives {
+    grid-column: 2;
+    grid-row: 2;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    width: auto;
+}
+
+.objectives h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #f1c40f;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+}
+
+.objective-container {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0px 0px 8px rgba(255, 255, 255, 0.2);
+    transition: transform 0.2s ease-in-out;
+}
+
+.objective-container:hover {
+    transform: scale(1.05);
+}
+
+#currentObjective {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.progress-text {
+    font-size: 1em;
+    color: #ecf0f1;
+    margin-bottom: 5px;
+}
+
+@keyframes shine {
+    0% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+    50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.7); }
+    100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
+}
+
+.objective-completed {
+    animation: shine 1.5s infinite alternate;
+    color: #f39c12;
+    font-weight: bold;
+}
+
+/* Events */
+.events {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    grid-column: 2;
+    grid-row: 3;
+}
+
+.events h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #f1c40f;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+}
+
+#eventLog {
+    max-height: 450px; /* Ajuste la hauteur max selon ton besoin */
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-width: 100%;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none; /* Cache la barre de scroll sur Firefox */
+    -ms-overflow-style: none; /* Cache la barre de scroll sur Edge/IE */
+}
+
+.event-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 5px;
+}
+
+#eventLog::-webkit-scrollbar {
+    display: none;
+}
+
+#eventLog li {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 10px;
+    word-wrap: break-word; /* Force the text to wrap */
+    overflow-wrap: break-word; /* Ensure compatibility */
+    white-space: normal; /* Allow text to wrap to the next line */
+    text-align: left;
+    font-size: 0.9em;
+    line-height: 1.4;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s ease-in-out;
+    box-sizing: border-box;
+    height: auto; /* Allow the message to expand in height */
+    display: block; /* Ensure block display to handle height properly */
+}
+
+.message-left {
+    margin-top:10px;
+    align-self: flex-start;
+    background: #3498db;
+    border-bottom-left-radius: 2px;
+    max-width: 60%;
+}
+
+.message-right {
+    margin-top:10px;
+    align-self: flex-end;
+    background: #27ae60;
+    border-bottom-right-radius: 2px;
+    max-width: 60%;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Popups */
+.popup-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    z-index: 999;
+}
+
+.popup-error {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.9);
+    background: rgba(231, 76, 60, 0.95);
+    color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-size: 1.2em;
+    font-weight: bold;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    z-index: 1000;
+}
+
+.popup-backdrop.show, .popup-error.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-error.show {
+    transform: translate(-50%, -50%) scale(1);
+}
+
+/* Animations */
+@keyframes clickEffect {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); box-shadow: 0px 0px 40px rgba(255, 255, 255, 0.8); }
+    100% { transform: scale(1); }
+}
+
+.click-effect {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: explosion 0.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes explosion {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+#clicker {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(39, 174, 96, 1) 0%, rgba(22, 160, 133, 1) 80%);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0px 0px 15px rgba(39, 174, 96, 0.7), inset 0px 0px 10px rgba(255, 255, 255, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size:1.5em;}
+
+/* Centrage spécifique pour stats et events */
+.stats, .events {
+    text-align: center;
+}
+
+/* Centrage et styles complémentaires pour le clicker */
+#clicker {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: white;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    transition: transform 0.1s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+#clicker:hover {
+    background: #1e8449;
+}
+
+/* Effet pulsation continu */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 15px rgba(39, 174, 96, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 30px rgba(39, 174, 96, 0.9), inset 0 0 15px rgba(255, 255, 255, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 15px rgba(39, 174, 96, 0.7), inset 0 0 10px rgba(255, 255, 255, 0.4);
+    }
+}
+
+/* Styles complémentaires pour inventaire */
+.inventory {
+    gap: -25px; /* Important pour respecter ta mise en page initiale */
+}
+
+.inventory p::before {
+    font-size: 1.3em;
+    margin-right: 10px;
+}
+
+/* Gestion responsive inventaire */
+@media (max-width: 768px) {
+    .inventory {
+        width: 90%;
+    }
+
+    .inventory h2 {
+        font-size: 1.3em;
+    }
+
+    .inventory p {
+        font-size: 1em;
+    }
+}
+
+/* Animation explosion au clic */
+.click-effect {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: scale(0);
+    animation: explosion 0.5s ease-out;
+    pointer-events: none;
+}
+
+@keyframes explosion {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* Animation de clic sur les boutons de la boutique */
+.shop button:active {
+    transform: scale(0.95);
+    filter: brightness(1.2);
+    transition: transform 0.1s, filter 0.1s;
+}
+
+/* Animation spécifique au bouton Reset */
+.btn-reset:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(231, 76, 60, 0.4);
+}
+
+/* Effet visuel succès objectif accompli */
+@keyframes successGlow {
+    0% { box-shadow: 0 0 10px #f39c12; }
+    50% { box-shadow: 0 0 25px #f1c40f; }
+    100% { box-shadow: 0 0 10px #f39c12; }
+}
+
+.progress-fill.success {
+    animation: successGlow 1s ease-in-out infinite alternate;
+}
+
+/* Ajustements responsive pour Desktop uniquement */
+@media (min-width: 1025px) {
+    .wrapper {
+        flex-direction: row;
+    }
+
+    .shop {
+        width: 250px;
+        margin-right: 20px;
+    }
+
+    .container {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(3, min-content);
+        gap: 25px;
+        flex-grow: 1;
+    }
+}
+@media (max-width: 1024px) {
+    .events, .objectives, .stats {
+        width: 90%;
+        max-width: 100%;
+    }
+}
+@media (max-width: 768px) {
+    .btn-reset {
+        width: 80%; /* Réduit encore plus la largeur sur mobile */
+        max-width: 250px; /* Garde une taille raisonnable */
+        margin: 15px auto; /* Centre bien le bouton */
+    }
+}
+@media (max-width: 1024px) {
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    
+
+    .clicker-container {
+        order: 2; /* Le clicker en premier après le titre */
+    }
+
+    .inventory {
+        order: 3; /* Les ressources juste après */
+    }
+
+    .objectives {
+        order: 4; /* Les objectifs avant les événements */
+    }
+
+    .events {
+        order: 5; /* Historique des événements après les objectifs */
+    }
+
+    .shop {
+        order: 6; /* La boutique en dernier */
+    }
+
+    .btn-reset {
+        order: 7; /* Bouton réinitialiser en tout dernier */
+    }
+}
+@media (max-width: 1024px) {
+    .main-container {
+        padding: 0 15px; /* Ajoute du padding latéral */
+    }
+
+    .title, 
+    .clicker-container, 
+    .inventory, 
+    .objectives, 
+    .events, 
+    .shop, 
+    .btn-reset {
+        width: 90%;
+        max-width: 90%; /* Assure que tout reste centré avec un peu d'espace */
+        margin: 0 auto; /* Centre horizontalement */
+        padding: 15px; /* Ajoute de l'espace interne pour que le contenu ne colle pas aux bords */
+    }
+}
+
+/* 🕒 Overlay qui représente la jauge de cooldown */
+.cooldown-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%; /* Couvre toute la largeur du bouton */
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Ombre semi-transparente */
+    pointer-events: none;
+    z-index: 2; /* Pour passer au-dessus du texte */
+}
+
+/* 🕒 Animation pour le cooldown (réduction de la hauteur de l'overlay) */
+@keyframes cooldown {
+    from { height: 100%; }
+    to { height: 0%; }
+}
+
+/* Désactiver le bouton temporairement pour éviter le spam */
+.shop button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}

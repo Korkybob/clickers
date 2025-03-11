@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eco Clicker</title>
+
+</head>
+<body>
+
+
+<div class="main-container">
+    <h1 class="title">Eco Clicker</h1>
+    <div class="wrapper">
+    <!-- Boutique (Séparée sur la gauche) -->
+    <div class="shop">
+        <h2>🏪 Améliorations</h2>
+        <div class="shop-item">
+            <p>🌳 Planter un arbre</p>
+            <p>Coût : 🌱 10</p>
+            <button class="btn-green btn-trees" onclick="buyUpgrade(10, 0, 0, 'trees')">Acheter</button>
+        </div>
+        <div class="shop-item">
+            <p>☀️ Panneau solaire</p>
+            <p>Coût : 🌱 50</p>
+            <button class="btn-yellow btn-solar" onclick="buyUpgrade(50, 0, 0, 'solar')">Acheter</button>
+        </div>
+        <div class="shop-item">
+            <p>💨 Éolienne</p>
+            <p>Coût : 🌱 300</p>
+            <button class="btn-blue btn-windTurbines" onclick="buyUpgrade(300, 0, 0, 'windTurbines')">Acheter</button>
+        </div>
+        <div class="shop-item">
+            <p>💧 Centrale hydroélectrique</p>
+            <p>Coût : 🌱 500, ⚙️ 300</p>
+            <button class="btn-orange btn-hydroPlants" onclick="buyUpgrade(500, 300, 0, 'hydroPlants')">Acheter</button>
+        </div>
+        <div class="shop-item">
+            <p>🏫 Centre de recherche</p>
+            <p>Coût : 🌱 750, ⚙️ 500, ⚡ 500</p>
+            <button class="btn-purple btn-researchCenter" onclick="buyUpgrade(750, 500, 500, 'researchCenter')">Acheter</button>
+        </div>
+        <!-- ✅ Bouton Réinitialiser -->
+    <button class="btn-reset" onclick="resetGame()">🔄 Réinitialiser</button>
+
+    </div>
+
+    <!-- Conteneur principal -->
+    <div class="container">
+        <!-- Clicker Principal (Colonne gauche en haut) -->
+        <div class="section clicker-container">
+            
+            <button id="clicker">🌱 Click</button>
+            
+            
+        </div>
+
+        <!-- Statistiques (Colonne droite en haut) -->
+        <!-- <div class="section stats">
+            <h2>📊 Statistiques</h2>
+            <p>🌱 Points verts : <span id="score">0</span></p>
+            <p>⚡ Points énergie : <span id="energy">0</span></p>
+            <p>⚙️ Points innovation : <span id="innovation">0</span></p>
+            <p>🎓 Expérience : <span id="xp">0</span> / <span id="xpNeeded">100</span></p>
+            <p>Niveau : <span id="level">1</span></p>
+            <div class="progress-bar"><div id="xpBar" class="progress-fill"></div></div>
+        </div> -->
+        <!-- ✅ Bloc Statistiques amélioré -->
+<div class="section stats">
+    <h2>📊 Ressources</h2>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <span class="emoji">🌱</span>
+            <p>Points verts</p>
+            <span id="score">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="emoji">⚡</span>
+            <p>Énergie</p>
+            <span id="energy">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="emoji">⚙️</span>
+            <p>Innovation</p>
+            <span id="innovation">0</span>
+        </div>
+    </div>
+
+    <div class="level-info">
+        <p><strong>🎓 Niveau :</strong> <span id="level">1</span></p>
+        <p class="xp-text">Expérience : <span id="xp">0</span> / <span id="xpNeeded">100</span></p>
+    </div>
+
+    <div class="progress-bar">
+        <div id="xpBar" class="progress-fill"></div>
+    </div>
+</div>
+
+
+        <!-- Objectifs (Colonne droite, milieu) -->
+        <div class="section objectives">
+            <h2>🎯 Objectifs</h2>
+            <p id="currentObjective">Planter des arbres - Niveau 3</p>
+
+            <p>Progression : <span id="objectiveProgress">0</span> / <span id="objectiveGoal">5</span></p>
+            <div class="progress-bar"><div id="objectiveBar" class="progress-fill"></div></div>
+        </div>
+
+        <!-- Inventaire (Colonne gauche, bas) -->
+        <div class="section inventory">
+            <h2>🎒 Inventaire</h2>
+            <p>🌳 Arbres plantés : <span id="trees">0</span></p>
+            <p>☀️ Panneaux solaires : <span id="solar">0</span></p>
+            <p>💨 Éoliennes : <span id="windTurbines">0</span></p>
+            <p>💧 Centrales hydroélectriques : <span id="hydroPlants">0</span></p>
+            <p>🏫 Centres de recherche : <span id="researchCenter">0</span></p>
+        </div>
+
+        <!-- Événements (Colonne droite, bas) -->
+        <div class="section events">
+            <h2>📜 Événements</h2>
+            <div class="event-content">
+                <ul id="eventLog"></ul>
+            </div>
+        </div>
+        
+    </div>
+    </div>
+</div>
+
+
+
+
+<script src="script.js"></script>
+<div id="popupBackdrop" class="popup-backdrop"></div>
+<div id="popupError" class="popup-error">❌ Pas assez de ressources !</div>
+
+<audio id="clickSound" src="pew.mp3"></audio>
+<audio id="buySound" src="money-soundfx.mp3"></audio>
+<audio id="eventSound" src="ding_2.mp3"></audio>
+<audio id="successSound" src="xbox.mp3"></audio>
+
+
+</body>
+</html>
