@@ -7,7 +7,7 @@ let pollution = 50; // Pollution commence à 50% sur 100
 
 let greenPointsThreshold = 100; // Seuil pour réduire la pollution
 let accumulatedGreenPoints = 0; // Compteur des points accumulés
-
+let pollutionCriticalTriggered = false; // ✅ Variable pour éviter la répétition
 
 let startValues = {
     score: 0,
@@ -70,7 +70,11 @@ function resetGame() {
     energy = 0;
     innovation = 0;
     pollution = 50; // 🔄 Réinitialisation de la pollution
+    
+        // ✅ Vérification de la pollution après modification
+        clampPollution();
     accumulatedGreenPoints = 0; // 🔄 Réinitialisation des points verts accumulés
+
 
     // 🛑 Réinitialiser les effets des événements dynamiques en cours
     activeEvents = [];
@@ -102,6 +106,8 @@ setTimeout(() => document.body.classList.remove("flash-reset"), 500);
     // 🎉 Ajoute un événement "Réinitialisation"
     addEvent("🔄 Jeu réinitialisé !");
 }
+
+
 
 
 /* ✅ Effet de particules amélioré pour mobile et desktop */
@@ -140,6 +146,10 @@ function createParticle(x, y) {
         particle.remove();
     }, 500);
 }
+function clampPollution() {
+    if (pollution > 100) pollution = 100;
+    if (pollution < 0) pollution = 0;
+}
 
 
 function buyUpgrade(vertCost, innoCost, energyCost, type) {
@@ -158,8 +168,12 @@ function buyUpgrade(vertCost, innoCost, energyCost, type) {
         if (type === 'hydroPlants') hydroPlants++; pollution += 1;
         if (type === 'researchCenter') researchCenter++; pollution += 1.5;
 
+        
+        // ✅ Vérification de la pollution après modification
+        clampPollution();
+
          // 🔊 Joue le son d'achat
-            document.getElementById("buySound").play();
+        document.getElementById("buySound").play();
         
         // ✅ Enregistre le temps d'achat
         lastPurchaseTime[type] = now;
@@ -275,64 +289,6 @@ function addEvent(text) {
 }
 
 
-// // Liste des objectifs possibles
-// const objectivesList = [
-//     { text: "Planter 5 arbres", type: "trees", goal: 5 },
-//     { text: "Accumuler 500 points verts", type: "score", goal: 500 },
-//     { text: "Installer 3 panneaux solaires", type: "solar", goal: 3 },
-//     { text: "Installer 2 éoliennes", type: "windTurbines", goal: 2 }
-// ];
-
-// let currentObjective = {};
-// setNewObjective();
-
-// // Fonction pour définir un nouvel objectif
-// function setNewObjective() {
-//     currentObjective = objectivesList[Math.floor(Math.random() * objectivesList.length)];
-//     document.getElementById("currentObjective").innerText = currentObjective.text;
-//     document.getElementById("objectiveGoal").innerText = currentObjective.goal;
-//     document.getElementById("objectiveProgress").innerText = 0;
-//     updateObjectiveProgress();
-// }
-
-// // Vérifie la progression de l'objectif et met à jour la barre
-// // function updateObjectiveProgress() {
-// //     let progress = eval(currentObjective.type); // Récupère la valeur associée (ex: trees, score...)
-// //     document.getElementById("objectiveProgress").innerText = progress;
-// //     let percent = Math.min((progress / currentObjective.goal) * 100, 100);
-// //     document.getElementById("objectiveBar").style.width = percent + "%";
-
-// //     // Si objectif atteint, on attribue un nouvel objectif
-// //     if (progress >= currentObjective.goal) {
-// //         addEvent("🎯 Objectif complété : " + currentObjective.text);
-// //         setNewObjective();
-// //     }
-// // }
-// function updateObjectiveProgress() {
-//     let progress = eval(currentObjective.type);
-//     document.getElementById("objectiveProgress").innerText = progress;
-//     let percent = Math.min((progress / currentObjective.goal) * 100, 100);
-//     document.getElementById("objectiveBar").style.width = percent + "%";
-
-//     // 🎉 Si objectif atteint
-//     if (progress >= currentObjective.goal) {
-//         let objectiveText = document.getElementById("currentObjective");
-//         objectiveText.classList.add("objective-completed");
-
-//         // 🔊 Joue un son de réussite (ajoute un fichier `success.mp3`)
-//         document.getElementById("successSound").play();
-
-//         // ✅ Ajoute un événement
-//         addEvent("🎯 Objectif complété : " + currentObjective.text);
-
-//         // ⏳ Remet un nouvel objectif après 1 min
-//         setTimeout(() => {
-//             objectiveText.classList.remove("objective-completed");
-//             setNewObjective();
-//         }, 60000);
-//     }
-// }
-
 // 🎯 Liste des objectifs avec leur niveau de difficulté initial
 const objectivesList = [
     { text: "Planter des arbres", type: "trees", baseGoal: 5, level: 1 },
@@ -344,41 +300,25 @@ const objectivesList = [
 let objectifEnCours = true; // indique si un objectif est actif
 
 let currentObjective = {};
-// let startValues = {}; // ✅ Stocke les valeurs au moment de l'arrivée d'un objectif
+
 
 setNewObjective();
 
-// // 🎯 Fonction pour définir un nouvel objectif
-// function setNewObjective() {
-//     // Sélectionne un objectif au hasard
-//     currentObjective = objectivesList[Math.floor(Math.random() * objectivesList.length)];
-    
-//     // Détermine la difficulté en fonction du niveau
-//     let goal = currentObjective.baseGoal * currentObjective.level;
 
-//     // Stocke la valeur actuelle du type de ressource ciblée
-//     startValues[currentObjective.type] = eval(currentObjective.type);
-
-//     // ✅ Met à jour l'affichage (Ajoute le niveau directement dans le texte)
-//     document.getElementById("currentObjective").innerText = `${currentObjective.text} - Niveau ${currentObjective.level}`;
-//     document.getElementById("objectiveGoal").innerText = goal;
-//     document.getElementById("objectiveProgress").innerText = 0;
-
-//     updateObjectiveProgress();
-// }
+// Mise à jour dynamique dans setNewObjective()
 function setNewObjective() {
     currentObjective = objectivesList[Math.floor(Math.random() * objectivesList.length)];
     let goal = currentObjective.baseGoal * currentObjective.level;
 
-    // Stocke les valeurs actuelles de toutes les ressources
-    startValues = {
+    // Mise à jour de startValues au lieu de recréer l'objet
+    Object.assign(startValues, {
         score,
         trees,
         solar,
         windTurbines,
         hydroPlants,
         researchCenter
-    };
+    });
 
     document.getElementById("currentObjective").innerText = `${currentObjective.text} - Niveau ${currentObjective.level}`;
     document.getElementById("objectiveGoal").innerText = goal;
@@ -387,42 +327,6 @@ function setNewObjective() {
     updateObjectiveProgress();
 }
 
-
-// // 🎯 Vérifie la progression et met à jour la barre
-// function updateObjectiveProgress() {
-//     if (!objectifEnCours) return; // Bloque la progression si objectif terminé
-    
-//     let progress = eval(currentObjective.type) - startValues[currentObjective.type];
-//     let goal = currentObjective.baseGoal * currentObjective.level;
-    
-//     document.getElementById("objectiveProgress").innerText = progress;
-//     let percent = Math.min((progress / goal) * 100, 100);
-//     document.getElementById("objectiveBar").style.width = percent + "%";
-
-//     if (progress >= goal) {
-        
-        
-//         addEvent(`🎯 Objectif complété : ${currentObjective.text} - Niveau ${currentObjective.level}`);
-        
-//         currentObjective.level++;
-
-//         document.getElementById("currentObjective").innerText = "⏳ Un nouvel objectif arrive";
-//         document.getElementById("objectiveProgress").innerText = "0";
-//         document.getElementById("objectiveGoal").innerText = "-";
-//         document.getElementById("objectiveBar").style.width = "0%";
-
-//         objectifEnCours = false; // Bloque l'objectif actuel
-     
-
-//         // 🔊 Joue le son de succès
-//         document.getElementById("successSound").play();
-
-//         setTimeout(() => {
-//             setNewObjective();
-//             objectifEnCours = true; // Réactive l'objectif
-//         }, 10000); // 10 secondes avant prochain objectif
-//     }
-// }
 function updateObjectiveProgress() {
     if (!objectifEnCours) return;
 
@@ -538,16 +442,39 @@ setInterval(() => {
     if (accumulatedGreenPoints >= greenPointsThreshold) {
         pollution -= 0.9; // Réduction de pollution
         accumulatedGreenPoints = 0; // Réinitialisation du compteur
+        
+        // ✅ Vérification de la pollution après modification
+        clampPollution();
     }
 
     updateDisplay(); 
 }, 1000);
 
-setInterval(() => { innovation += windTurbines * 2; updateDisplay(); }, 5000);
-setInterval(() => { energy += hydroPlants * 5; updateDisplay(); }, 10000);
-// setInterval(() => { xp += researchCenter * 5; updateDisplay(); }, 1000);
-                    
+// 🌍 Production passive d'innovation et d'énergie + pollution progressive
+setInterval(() => { 
+    innovation += windTurbines * 2; // Les éoliennes produisent de l'innovation, sans pollution
+    pollution += hydroPlants * 0.2; // Les centrales hydroélectriques polluent légèrement
+    
+        // ✅ Vérification de la pollution après modification
+        clampPollution();
+    updateDisplay();
+}, 5000);
+
+setInterval(() => { 
+    energy += hydroPlants * 5; // Les centrales hydroélectriques génèrent beaucoup d’énergie
+    pollution += researchCenter * 0.5; // Les centres de recherche polluent fortement
+    
+        // ✅ Vérification de la pollution après modification
+        clampPollution();
+    updateDisplay();
+}, 10000);
+
+
 setInterval(() => {
+
+    pollution += hydroPlants * 0.2 + researchCenter * 0.5; // Pollution passive des centrales et centres de recherche
+    if (pollution > 100) pollution = 100; // Évite de dépasser 100%
+    if (pollution < 0) pollution = 0; // Évite les valeurs négatives
     pollution += 1; // Augmente naturellement
     updateDisplay();
 }, 7000); // Augmente de 1 toutes les 7 secondes
@@ -558,45 +485,17 @@ setInterval(() => {
                     updateDisplay();
                     }, 1000);
 
-                    function resetGame() {
-                        // 🔄 Remet toutes les valeurs à zéro
-                        score = 0;
-                        xp = 0;
-                        level = 1;
-                        xpNeeded = 100;
-                        trees = 0;
-                        solar = 0;
-                        windTurbines = 0;
-                        hydroPlants = 0;
-                        researchCenter = 0;
-                        energy = 0; // ✅ Réinitialisation correcte
-                        innovation = 0; // ✅ Réinitialisation correcte
-                    
-                        // 🔊 Joue un son de reset
-                        let resetSound = document.getElementById("resetSound");
-                        if (resetSound) {
-                            resetSound.play();
-                        }
-                    
-                        // 💥 Petit effet sur le bouton
-                        let resetBtn = document.querySelector(".btn-reset");
-                        if (resetBtn) {
-                            resetBtn.style.animation = "clickEffect 0.3s ease-out";
-                            setTimeout(() => resetBtn.style.animation = "", 300);
-                        }
-                    
-                        // ✅ Mise à jour de l'affichage
-                        updateDisplay();
-                    
-                        // 🎉 Ajoute un événement "Réinitialisation"
-                        addEvent("🔄 Jeu réinitialisé !");
-                    }
 
                     function checkPollutionEffects() {
-                        if (pollution >= 100) {
+                        if (pollution >= 100 && !pollutionCriticalTriggered) {
                             addEvent("🌪 Pollution critique ! Production réduite !");
+                            pollutionCriticalTriggered = true; // ✅ Bloque l'affichage jusqu'à ce que la pollution redescende
                             score -= 2; // Perd des points verts en cas de pollution extrême
+                        } 
+                    
+                        if (pollution < 100 && pollutionCriticalTriggered) {
+                            pollutionCriticalTriggered = false; // ✅ Permet de réafficher l'alerte si ça remonte à 100 plus tard
                         }
+                    
                         if (pollution < 0) pollution = 0; // On évite une pollution négative
                     }
-                    
