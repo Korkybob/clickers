@@ -3,6 +3,12 @@ let score = 0, xp = 0, level = 1, xpNeeded = 100;
 let trees = 0, solar = 0, windTurbines = 0, hydroPlants = 0, researchCenter = 0;
 let energy = 0, innovation = 0;
 
+let pollution = 50; // Pollution commence à 50% sur 100
+
+let greenPointsThreshold = 100; // Seuil pour réduire la pollution
+let accumulatedGreenPoints = 0; // Compteur des points accumulés
+
+
 let startValues = {
     score: 0,
     trees: 0,
@@ -26,6 +32,14 @@ let lastPurchaseTime = {};
 document.getElementById("clicker").addEventListener("click", function() {
     score += 1;
     xp += 5;
+    pollution -= 0.3;
+    accumulatedGreenPoints += 1; // Ajoute les points verts accumulés
+
+    if (accumulatedGreenPoints >= greenPointsThreshold) {
+        pollution -= 1; // Réduit la pollution
+        accumulatedGreenPoints = 0; // Réinitialise le compteur
+    }
+
     checkLevelUp();
     updateDisplay();
 });
@@ -118,11 +132,11 @@ function buyUpgrade(vertCost, innoCost, energyCost, type) {
         energy -= energyCost;
 
         // ✅ Ajout de l'élément acheté
-        if (type === 'trees') trees++;
-        if (type === 'solar') solar++;
-        if (type === 'windTurbines') windTurbines++;
-        if (type === 'hydroPlants') hydroPlants++;
-        if (type === 'researchCenter') researchCenter++;
+        if (type === 'trees') trees++; pollution -= 0.3;
+        if (type === 'solar') solar++; pollution += 0.5;
+        if (type === 'windTurbines') windTurbines++; pollution += 0.7;
+        if (type === 'hydroPlants') hydroPlants++; pollution += 1;
+        if (type === 'researchCenter') researchCenter++; pollution += 1.5;
 
          // 🔊 Joue le son d'achat
             document.getElementById("buySound").play();
@@ -138,6 +152,8 @@ function buyUpgrade(vertCost, innoCost, energyCost, type) {
         showErrorPopup("❌ Pas assez de ressources !");
     }
 }
+
+
 function startCooldownVisual(type) {
     let button = document.querySelector(`.btn-${type}`);
     
@@ -472,16 +488,50 @@ function updateDisplay() {
     document.getElementById("windTurbines").innerText = windTurbines;
     document.getElementById("hydroPlants").innerText = hydroPlants;
     document.getElementById("researchCenter").innerText = researchCenter;
+    document.getElementById("pollutionLevel").innerText = pollution.toFixed(1);
+    document.getElementById("pollutionBar").style.width = `${Math.min(pollution, 100)}%`;
+    // 🌍 Mise à jour du style de la barre de pollution en fonction du niveau
+let pollutionBar = document.getElementById("pollutionBar");
+
+if (pollution < 30) {
+    pollutionBar.style.background = "#2ecc71"; // Vert
+} else if (pollution < 70) {
+    pollutionBar.style.background = "#f1c40f"; // Jaune/Orange
+} else {
+    pollutionBar.style.background = "#e74c3c"; // Rouge
+}
+
+    
+    // Vérification des effets liés à la pollution
+    checkPollutionEffects();
     
     // Mise à jour des objectifs
     updateObjectiveProgress();
 }
 
 
-setInterval(() => { score += trees * 1; score += solar * 3; updateDisplay(); }, 1000);
+setInterval(() => { 
+    let pointsGagnes = trees * 1 + solar * 3; // Calcul des points verts générés
+    score += pointsGagnes;
+    accumulatedGreenPoints += pointsGagnes; // Ajoute au compteur temporaire
+
+    if (accumulatedGreenPoints >= greenPointsThreshold) {
+        pollution -= 0.9; // Réduction de pollution
+        accumulatedGreenPoints = 0; // Réinitialisation du compteur
+    }
+
+    updateDisplay(); 
+}, 1000);
+
 setInterval(() => { innovation += windTurbines * 2; updateDisplay(); }, 5000);
 setInterval(() => { energy += hydroPlants * 5; updateDisplay(); }, 10000);
 // setInterval(() => { xp += researchCenter * 5; updateDisplay(); }, 1000);
+                    
+setInterval(() => {
+    pollution += 1; // Augmente naturellement
+    updateDisplay();
+}, 7000); // Augmente de 1 toutes les 7 secondes
+
 setInterval(() => {
                     xp += researchCenter * 5;
                     checkLevelUp(); // Vérifie si l'XP dépasse le seuil et ajuste le niveau
@@ -520,5 +570,13 @@ setInterval(() => {
                     
                         // 🎉 Ajoute un événement "Réinitialisation"
                         addEvent("🔄 Jeu réinitialisé !");
+                    }
+
+                    function checkPollutionEffects() {
+                        if (pollution >= 100) {
+                            addEvent("🌪 Pollution critique ! Production réduite !");
+                            score -= 2; // Perd des points verts en cas de pollution extrême
+                        }
+                        if (pollution < 0) pollution = 0; // On évite une pollution négative
                     }
                     

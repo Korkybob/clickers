@@ -694,6 +694,8 @@ h1 {
     background: #1e8449;
 }
 
+
+
 /* Effet pulsation continu */
 @keyframes pulse {
     0% {
@@ -878,4 +880,34 @@ h1 {
 .shop button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
+}
+
+.pollution {
+    text-align: center;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.2);
+}
+
+.pollution h2 {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #f1c40f;
+    text-shadow: 2px 2px 5px rgba(255, 255, 255, 0.3);
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 15px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    transition: width 0.5s ease-in-out, background 0.5s ease-in-out;
 }
