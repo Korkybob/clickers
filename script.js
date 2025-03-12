@@ -69,13 +69,32 @@ function resetGame() {
     researchCenter = 0;
     energy = 0;
     innovation = 0;
+    pollution = 50; // 🔄 Réinitialisation de la pollution
+    accumulatedGreenPoints = 0; // 🔄 Réinitialisation des points verts accumulés
 
-    // 🔊 Joue un son de reset
-    document.getElementById("resetSound").play();
+    // 🛑 Réinitialiser les effets des événements dynamiques en cours
+    activeEvents = [];
+    
+    // 🔊 Joue un son de reset (si présent)
+    let resetSound = document.getElementById("resetSound");
+    if (resetSound) {
+        resetSound.play();
+    }
 
-    // 💥 Petit effet sur le bouton
+    // 💥 Petit effet sur le bouton Reset
     let resetBtn = document.querySelector(".btn-reset");
-    resetBtn.style.animation = "clickEffect 0.3s ease-out";
+    if (resetBtn) {
+        resetBtn.style.animation = "clickEffect 0.3s ease-out";
+        setTimeout(() => resetBtn.style.animation = "", 300);
+    }
+    document.body.classList.add("flash-reset");
+setTimeout(() => document.body.classList.remove("flash-reset"), 500);
+
+
+    // 🎯 Réinitialiser les coûts des upgrades
+    Object.keys(cooldowns).forEach(type => {
+        lastPurchaseTime[type] = 0;
+    });
 
     // ✅ Mise à jour de l'affichage
     updateDisplay();
@@ -83,6 +102,7 @@ function resetGame() {
     // 🎉 Ajoute un événement "Réinitialisation"
     addEvent("🔄 Jeu réinitialisé !");
 }
+
 
 /* ✅ Effet de particules amélioré pour mobile et desktop */
 document.getElementById("clicker").addEventListener("click", (event) => {

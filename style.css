@@ -911,3 +911,11 @@ h1 {
     height: 100%;
     transition: width 0.5s ease-in-out, background 0.5s ease-in-out;
 }
+@keyframes flashReset {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+.flash-reset {
+    animation: flashReset 0.5s ease-in-out;
+}
