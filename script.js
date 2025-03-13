@@ -271,18 +271,17 @@ setTimeout(() => document.body.classList.remove("flash-reset"), 500);
     document.getElementById("eventLog").innerHTML = "";
 
 
-    // ✅ Mise à jour de l'affichage
-    updateDisplay();
+
         // ✅ Vider complètement les événements un par un
         let eventLog = document.getElementById("eventLog");
         while (eventLog.firstChild) {
             eventLog.removeChild(eventLog.firstChild);
         }
-        // ✅ Mise à jour de l'affichage
-        updateDisplay();
+    
 
     // 🎉 Ajoute un événement "Réinitialisation"
-    addEvent("🔄 Jeu réinitialisé !");
+    addEvent("🔄 Jeu réinitialisé !");   // ✅ Mise à jour de l'affichage
+        updateDisplay();
 }
 
 
