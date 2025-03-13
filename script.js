@@ -9,6 +9,13 @@ let greenPointsThreshold = 100; // Seuil pour réduire la pollution
 let accumulatedGreenPoints = 0; // Compteur des points accumulés
 let pollutionCriticalTriggered = false; // ✅ Variable pour éviter la répétition
 
+let lowPollutionBonusActive = false;
+let mediumPollutionMalusActive = false;
+let highPollutionCostIncreaseActive = false;
+let veryHighPollutionMalusActive = false;
+let gameOverTriggered = false;
+
+
 let startValues = {
     score: 0,
     trees: 0,
@@ -26,37 +33,178 @@ let cooldowns = {
     researchCenter: 35000 // 35 sec
 };
 
+// let handleClick = function() {}; // Initialisation de la fonction pour éviter l'erreur
+
+
 // Objet pour suivre les délais d'achat
 let lastPurchaseTime = {};
 
-document.getElementById("clicker").addEventListener("click", function() {
-    score += 1;
-    xp += 5;
-    pollution -= 0.3;
-    accumulatedGreenPoints += 1; // Ajoute les points verts accumulés
+function handleClick(event) {
+    console.log(`💡 Clic ! Pollution avant : ${pollution}`);
 
-    if (accumulatedGreenPoints >= greenPointsThreshold) {
-        pollution -= 1; // Réduit la pollution
-        accumulatedGreenPoints = 0; // Réinitialise le compteur
-    }
+    // ✅ Utilisation des multiplicateurs globaux
+    let pointsVertMultiplier = window.pointsVertMultiplier || 1;
+    let xpMultiplier = window.xpMultiplier || 1;
+
+    // ✅ Applique les valeurs de jeu
+    score += Math.round(1 * pointsVertMultiplier);
+    xp += Math.round(5 * xpMultiplier);
+    accumulatedGreenPoints += Math.round(1 * pointsVertMultiplier);
+    pollution -= 0.3; // ✅ La pollution diminue bien !
+
+    console.log(`🌍 Pollution après : ${pollution}`);
 
     checkLevelUp();
     updateDisplay();
-});
 
-document.getElementById("clicker").addEventListener("click", function(event) {
-    // 🔊 Joue le son
+    // ✅ 🔊 Joue le son du clic
     document.getElementById("clickSound").play();
 
-    // 💥 Ajoute l'effet de clic
-    this.style.animation = "clickEffect 0.2s ease-out";
+    // ✅ 💥 Animation du clicker
+    let clicker = document.getElementById("clicker");
+    clicker.style.animation = "clickEffect 0.2s ease-out";
+    setTimeout(() => {
+        clicker.style.animation = "";
+    }, 200);
 
-    // 🔥 Génère des particules autour du clicker
-    for (let i = 0; i < 5; i++) {
-        createParticle(event.clientX, event.clientY);
+    // ✅ 🔥 Génération de particules autour du clic
+    if (event) {
+        let x = event.clientX || event.touches?.[0]?.clientX;
+        let y = event.clientY || event.touches?.[0]?.clientY;
+        generateParticles(x, y);
     }
-});
+}
+
+
+console.log("Ajout de l'écouteur d'événement sur #clicker");
+document.getElementById("clicker").addEventListener("click", handleClick);
+document.getElementById("clicker").addEventListener("touchstart", handleClick);
+
+// document.getElementById("clicker").addEventListener("click", function() {
+//     score += 1;
+//     xp += 5;
+//     pollution -= 0.3;
+//     accumulatedGreenPoints += 1; // Ajoute les points verts accumulés
+
+//     if (accumulatedGreenPoints >= greenPointsThreshold) {
+//         pollution -= 1; // Réduit la pollution
+//         accumulatedGreenPoints = 0; // Réinitialise le compteur
+//     }
+
+//     checkLevelUp();
+//     updateDisplay();
+// });
+
+
+// document.getElementById("clicker").addEventListener("click", function(event) {
+//     // 🔊 Joue le son
+//     document.getElementById("clickSound").play();
+
+//     // 💥 Ajoute l'effet de clic
+//     this.style.animation = "clickEffect 0.2s ease-out";
+
+//     // 🔥 Génère des particules autour du clicker
+//     for (let i = 0; i < 5; i++) {
+//         createParticle(event.clientX, event.clientY);
+//     }
+// });
+
+// /* ✅ Effet de particules amélioré pour mobile et desktop */
+// document.getElementById("clicker").addEventListener("click", (event) => {
+//     generateParticles(event.clientX, event.clientY);
+// });
+
+// // ✅ Ajout pour mobile (tactile)
+// document.getElementById("clicker").addEventListener("touchstart", (event) => {
+//     let touch = event.touches[0]; // Prend le premier toucher
+//     generateParticles(touch.clientX, touch.clientY);
+// });
+
+
+
+function adjustUpgradePrices(multiplier) {
+    document.querySelectorAll(".shop-item").forEach(el => {
+        let costEl = el.querySelector(".upgrade-cost");
+        let basePrice = parseFloat(costEl.getAttribute("data-base-price"));
+
+        let newPrice = Math.ceil(basePrice * multiplier);
+        costEl.innerText = newPrice; // ✅ Mise à jour en temps réel du prix affiché
+        costEl.setAttribute("data-current-price", newPrice); // ✅ Stockage du prix actuel
+
+        console.log("✔️ Prix mis à jour avec un multiplicateur de :", multiplier);
+    });
+}
+
+
+function applyPollutionEffects() {
+    console.log("🔄 Vérification des effets de pollution | Pollution actuelle :", pollution);
+
+    let pointsVertMultiplier = 1;
+    let xpMultiplier = 1;
+
+    // ✅ MALUS BONUS si pollution entre 30% et 50% : XP réduit mais plus de points verts
+    if (pollution >= 30 && pollution < 50) {
+        pointsVertMultiplier = 2; // +50% de points verts
+        xpMultiplier = 0.5; // -50% d'XP
+    }
+
+    // ✅ Mettre à jour les multiplicateurs SANS modifier `handleClick`
+    window.pointsVertMultiplier = pointsVertMultiplier;
+    window.xpMultiplier = xpMultiplier;
+
+    console.log("✅ Multiplicateurs mis à jour !");
+
+    // ✅ AUGMENTATION DES PRIX si pollution entre 50% et 100%
+    if (pollution >= 50) {
+        if (!highPollutionCostIncreaseActive) {
+            highPollutionCostIncreaseActive = true;
+            adjustUpgradePrices(1.2);
+            console.log("⚠️ Augmentation des prix appliquée !");
+        }
+    } else {
+        if (highPollutionCostIncreaseActive) {
+            highPollutionCostIncreaseActive = false;
+            adjustUpgradePrices(1);
+            console.log("✅ Prix revenus à la normale !");
+        }
+    }
+
+    // ✅ GAME OVER si pollution atteint 100%
+    if (pollution >= 100 && !gameOverTriggered) {
+        gameOverTriggered = true;
+        console.log("💀 GAME OVER TRIGGERED !");
+        showGameOverPopup();
+    }
+}
+
+
+function showGameOverPopup() {
+    console.log("🚨 Affichage de la popup GAME OVER !");
+    
+    let popup = document.getElementById("gameOverPopup");
+    let backdrop = document.getElementById("popupBackdrop");
+
+    if (!popup || !backdrop) {
+        console.error("❌ Erreur : `gameOverPopup` ou `popupBackdrop` introuvable !");
+        return;
+    }
+
+    popup.classList.add("show");
+    backdrop.classList.add("show");
+
+    // ✅ Ajoute l'event pour fermer la popup
+    backdrop.addEventListener("click", function() {
+        popup.classList.remove("show");
+        backdrop.classList.remove("show");
+        resetGame(); // 🔄 Réinitialisation complète
+        gameOverTriggered = false; // Réactive le jeu après reset
+    });
+}
+
+
+
 function resetGame() {
+    
     // 🔄 Remet toutes les valeurs à zéro
     score = 0;
     xp = 0;
@@ -70,10 +218,23 @@ function resetGame() {
     energy = 0;
     innovation = 0;
     pollution = 50; // 🔄 Réinitialisation de la pollution
+
     
-        // ✅ Vérification de la pollution après modification
-        clampPollution();
+    // ✅ Vérification de la pollution après modification
+    clampPollution();
+
     accumulatedGreenPoints = 0; // 🔄 Réinitialisation des points verts accumulés
+    gameOverTriggered = false; // 🔄 Permet un nouveau Game Over plus tard
+
+    
+    // ✅ Ferme la popup Game Over
+    let popup = document.getElementById("gameOverPopup");
+    let backdrop = document.getElementById("popupBackdrop");
+
+    if (popup && backdrop) {
+        popup.classList.remove("show");
+        backdrop.classList.remove("show");
+    }
 
 
     // 🛑 Réinitialiser les effets des événements dynamiques en cours
@@ -110,16 +271,6 @@ setTimeout(() => document.body.classList.remove("flash-reset"), 500);
 
 
 
-/* ✅ Effet de particules amélioré pour mobile et desktop */
-document.getElementById("clicker").addEventListener("click", (event) => {
-    generateParticles(event.clientX, event.clientY);
-});
-
-// ✅ Ajout pour mobile (tactile)
-document.getElementById("clicker").addEventListener("touchstart", (event) => {
-    let touch = event.touches[0]; // Prend le premier toucher
-    generateParticles(touch.clientX, touch.clientY);
-});
 
 /* 🎇 Fonction pour créer des particules au bon endroit */
 function generateParticles(x, y) {
@@ -147,8 +298,10 @@ function createParticle(x, y) {
     }, 500);
 }
 function clampPollution() {
+    console.log("📏 Avant clamp: pollution =", pollution);
     if (pollution > 100) pollution = 100;
     if (pollution < 0) pollution = 0;
+    console.log("📏 Après clamp: pollution =", pollution);
 }
 
 
@@ -431,6 +584,10 @@ if (pollution < 30) {
     
     // Mise à jour des objectifs
     updateObjectiveProgress();
+
+        // ✅ Ajoute l'application des effets de pollution
+    applyPollutionEffects();
+    
 }
 
 
