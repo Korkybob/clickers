@@ -142,6 +142,19 @@ function applyPollutionEffects() {
         addEvent(" 🔵 Terminé !");
     }
 
+        // ✅ Pollution >= 70% : Réduction générale des gains
+        if (pollution >= 70) {
+            passiveReductionMultiplier = 0.5; // ⚠️ Divise tout par 2
+            if (!veryHighPollutionReductionActive) {
+                veryHighPollutionReductionActive = true;
+                addEvent("🔴 Tous les gains sont réduits !");
+            }
+        } else if (veryHighPollutionReductionActive) {
+            veryHighPollutionReductionActive = false;
+            addEvent("🔴 Terminé !");
+        }
+    
+
     // ✅ Mettre à jour les multiplicateurs SANS modifier `handleClick`
     window.pointsVertMultiplier = pointsVertMultiplier;
     window.xpMultiplier = xpMultiplier;
@@ -697,5 +710,40 @@ setInterval(() => {
                     
                         // ✅ Vérifie que la pollution ne dépasse pas les limites
                         if (pollution < 0) pollution = 0;
+                    }
+                    
+
+                    function editUsername() {
+                        let usernameDisplay = document.getElementById("username");
+                        let usernameInput = document.getElementById("usernameInput");
+                    
+                        usernameDisplay.style.display = "none";
+                        usernameInput.style.display = "block";
+                        usernameInput.value = usernameDisplay.innerText;
+                        usernameInput.focus();
+                    
+                        usernameInput.addEventListener("blur", saveUsername);
+                        usernameInput.addEventListener("keypress", function (e) {
+                            if (e.key === "Enter") saveUsername();
+                        });
+                    
+                        // Empêcher de dépasser 15 caractères
+                        usernameInput.addEventListener("input", function () {
+                            if (usernameInput.value.length > 20) {
+                                usernameInput.value = usernameInput.value.substring(0, 20);
+                            }
+                        });
+                    }
+                    
+                    function saveUsername() {
+                        let usernameDisplay = document.getElementById("username");
+                        let usernameInput = document.getElementById("usernameInput");
+                    
+                        if (usernameInput.value.trim() !== "") {
+                            usernameDisplay.innerText = usernameInput.value.trim();
+                        }
+                    
+                        usernameDisplay.style.display = "block";
+                        usernameInput.style.display = "none";
                     }
                     

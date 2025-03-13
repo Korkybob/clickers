@@ -53,9 +53,21 @@
 
     <!-- Conteneur principal -->
     <div class="container">
-        <!-- Clicker Principal (Colonne gauche en haut) -->
+
+        <!-- Carte de Profil -->
+
+
+        <!-- Clicker  + profil (Colonne gauche en haut) -->
         <div class="section clicker-container">
-            
+            <div class="profile-card">
+    <img src="monsieur-burns.jpg" alt="Avatar" class="profile-avatar">
+    <div class="profile-name">
+        <h3 id="username" onclick="editUsername()">Joueur</h3>
+        <input type="text" id="usernameInput" class="hidden" maxlength="20">
+    </div>
+    
+    <!-- <p>Niveau : <span id="playerLevel">1</span></p>-->
+            </div>
             <button id="clicker">🌱 Click</button>
             
             
