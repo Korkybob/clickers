@@ -142,17 +142,17 @@ function applyPollutionEffects() {
         addEvent(" 🔵 Terminé !");
     }
 
-        // ✅ Pollution >= 70% : Réduction générale des gains
-        if (pollution >= 70) {
-            passiveReductionMultiplier = 0.5; // ⚠️ Divise tout par 2
-            if (!veryHighPollutionReductionActive) {
-                veryHighPollutionReductionActive = true;
-                addEvent("🔴 Tous les gains sont réduits !");
-            }
-        } else if (veryHighPollutionReductionActive) {
-            veryHighPollutionReductionActive = false;
-            addEvent("🔴 Terminé !");
-        }
+        // // ✅ Pollution >= 70% : Réduction générale des gains
+        // if (pollution >= 70) {
+        //     passiveReductionMultiplier = 0.5; // ⚠️ Divise tout par 2
+        //     if (!veryHighPollutionReductionActive) {
+        //         veryHighPollutionReductionActive = true;
+        //         addEvent("🔴 Tous les gains sont réduits !");
+        //     }
+        // } else if (veryHighPollutionReductionActive) {
+        //     veryHighPollutionReductionActive = false;
+        //     addEvent("🔴 Terminé !");
+        // }
     
 
     // ✅ Mettre à jour les multiplicateurs SANS modifier `handleClick`
@@ -232,6 +232,18 @@ function resetGame() {
 
     accumulatedGreenPoints = 0; // 🔄 Réinitialisation des points verts accumulés
     gameOverTriggered = false; // 🔄 Permet un nouveau Game Over plus tard
+
+        // ✅ Réinitialise le nom du joueur à "Joueur"
+        document.getElementById("username").innerText = "Joueur";
+
+        // ✅ Remet l'input du nom à zéro s'il est visible
+        let usernameInput = document.getElementById("usernameInput");
+        usernameInput.value = "";
+        usernameInput.style.display = "none"; // Cache l'input si actif
+    
+        // ✅ Affiche à nouveau le pseudo par défaut
+        let usernameDisplay = document.getElementById("username");
+        usernameDisplay.style.display = "block";
 
     
     // ✅ Ferme la popup Game Over
@@ -744,5 +756,77 @@ setInterval(() => {
                     
                         usernameDisplay.style.display = "block";
                         usernameInput.style.display = "none";
+                    }
+                    
+
+
+                    function saveGameToFile() {
+                        let playerName = document.getElementById("username").innerText.trim() || "Joueur"; // Récupère le nom du joueur
+                        let gameData = {
+                            playerName,
+                            score, xp, level, xpNeeded,
+                            trees, solar, windTurbines, hydroPlants, researchCenter,
+                            energy, innovation, pollution
+                        };
+                    
+                        let jsonData = JSON.stringify(gameData, null, 2);
+                        let blob = new Blob([jsonData], { type: "application/json" });
+                        
+                        let a = document.createElement("a");
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `EcoClicker_${playerName}.json`; // ✅ Le fichier porte le nom du joueur
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    
+                        console.log(`💾 Sauvegarde exportée : ${a.download}`);
+                    }
+                    
+                    let gameIntervals = []; // Stocke les identifiants des intervalles pour pouvoir les arrêter
+                    function loadGameFromFile(event) {
+                        let file = event.target.files[0];
+                        if (!file) return;
+                    
+                        let reader = new FileReader();
+                        reader.onload = function (e) {
+                            try {
+                                let gameData = JSON.parse(e.target.result);
+                                console.log("📂 Contenu du fichier chargé :", gameData);
+                    
+                                if (gameData && typeof gameData === "object") {
+                                    // ✅ Mise à jour des valeurs du jeu
+                                    score = gameData.score ?? 0;
+                                    xp = gameData.xp ?? 0;
+                                    level = gameData.level ?? 1;
+                                    xpNeeded = gameData.xpNeeded ?? 100;
+                                    trees = gameData.trees ?? 0;
+                                    solar = gameData.solar ?? 0;
+                                    windTurbines = gameData.windTurbines ?? 0;
+                                    hydroPlants = gameData.hydroPlants ?? 0;
+                                    researchCenter = gameData.researchCenter ?? 0;
+                                    energy = gameData.energy ?? 0;
+                                    innovation = gameData.innovation ?? 0;
+                                    pollution = gameData.pollution ?? 50;
+                    
+                                    // ✅ Mise à jour du nom du joueur
+                                    if (gameData.playerName) {
+                                        document.getElementById("username").innerText = gameData.playerName;
+                                    }
+                    
+                                    // ✅ Mise à jour de l'affichage avec un léger délai pour éviter les bugs d'affichage
+                                    setTimeout(updateDisplay, 100);
+                    
+                                    console.log("✅ Partie chargée depuis le fichier !");
+                                } else {
+                                    console.error("❌ Fichier de sauvegarde invalide !");
+                                    alert("❌ Erreur : Fichier JSON invalide !");
+                                }
+                            } catch (error) {
+                                console.error("❌ Erreur lors de l'analyse du fichier JSON :", error);
+                                alert("❌ Erreur : Impossible de lire le fichier JSON !");
+                            }
+                        };
+                    
+                        reader.readAsText(file);
                     }
                     

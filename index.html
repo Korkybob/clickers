@@ -49,6 +49,12 @@
 
         <!-- ✅ Bouton Réinitialiser -->
         <button class="btn-reset" onclick="resetGame()">🔄 Réinitialiser</button>
+
+        <div class="save-load-container">
+            <button class="btn-save" onclick="saveGameToFile()">💾 Exporter</button>
+            <input type="file" id="loadFileInput" accept=".json" hidden onchange="loadGameFromFile(event)">
+            <button class="btn-load" onclick="document.getElementById('loadFileInput').click()">📂 Importer</button>
+        </div>
     </div>
 
     <!-- Conteneur principal -->
@@ -130,7 +136,11 @@
             <div class="event-content">
                 <ul id="eventLog"></ul>
             </div>
+
         </div>
+
+
+        
         <div class="section pollution">
             <h2>🌍 Pollution</h2>
             <p>Niveau de pollution : <span id="pollutionLevel">50</span>%</p>

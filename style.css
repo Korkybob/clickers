@@ -996,3 +996,32 @@ h1 {
 #username:hover {
     color: #f1c40f; /* Couleur or pour montrer que c'est cliquable */
 }
+.save-load-container {
+    display: flex;
+    justify-content: center; /* Centre les boutons */
+    gap: 10px; /* Espacement entre les boutons */
+    margin-top: auto; /* Pousse les boutons en bas */
+    padding-top: 10px;
+}
+
+.btn-save, .btn-load {
+    background: #27ae60;
+    color: white;
+    font-size: 0.9em; /* Réduit la taille */
+    padding: 8px 12px; /* Ajuste le padding */
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    width: 130px; /* Fixe une largeur uniforme */
+    text-align: center;
+}
+
+.btn-save:hover, .btn-load:hover {
+    background: #219150;
+    transform: scale(1.05);
+}
+
+.btn-save:active, .btn-load:active {
+    transform: scale(0.95);
+}
+
