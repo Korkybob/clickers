@@ -33,6 +33,15 @@ let cooldowns = {
     researchCenter: 35000 // 35 sec
 };
 
+let currentPrices = {
+    trees: 10,
+    solar: 50,
+    windTurbines: 300,
+    hydroPlants: 500,
+    researchCenter: 750
+};
+
+
 // let handleClick = function() {}; // Initialisation de la fonction pour éviter l'erreur
 
 
@@ -80,47 +89,6 @@ console.log("Ajout de l'écouteur d'événement sur #clicker");
 document.getElementById("clicker").addEventListener("click", handleClick);
 document.getElementById("clicker").addEventListener("touchstart", handleClick);
 
-// document.getElementById("clicker").addEventListener("click", function() {
-//     score += 1;
-//     xp += 5;
-//     pollution -= 0.3;
-//     accumulatedGreenPoints += 1; // Ajoute les points verts accumulés
-
-//     if (accumulatedGreenPoints >= greenPointsThreshold) {
-//         pollution -= 1; // Réduit la pollution
-//         accumulatedGreenPoints = 0; // Réinitialise le compteur
-//     }
-
-//     checkLevelUp();
-//     updateDisplay();
-// });
-
-
-// document.getElementById("clicker").addEventListener("click", function(event) {
-//     // 🔊 Joue le son
-//     document.getElementById("clickSound").play();
-
-//     // 💥 Ajoute l'effet de clic
-//     this.style.animation = "clickEffect 0.2s ease-out";
-
-//     // 🔥 Génère des particules autour du clicker
-//     for (let i = 0; i < 5; i++) {
-//         createParticle(event.clientX, event.clientY);
-//     }
-// });
-
-// /* ✅ Effet de particules amélioré pour mobile et desktop */
-// document.getElementById("clicker").addEventListener("click", (event) => {
-//     generateParticles(event.clientX, event.clientY);
-// });
-
-// // ✅ Ajout pour mobile (tactile)
-// document.getElementById("clicker").addEventListener("touchstart", (event) => {
-//     let touch = event.touches[0]; // Prend le premier toucher
-//     generateParticles(touch.clientX, touch.clientY);
-// });
-
-
 
 function adjustUpgradePrices(multiplier) {
     document.querySelectorAll(".shop-item").forEach(el => {
@@ -128,10 +96,14 @@ function adjustUpgradePrices(multiplier) {
         let basePrice = parseFloat(costEl.getAttribute("data-base-price"));
 
         let newPrice = Math.ceil(basePrice * multiplier);
-        costEl.innerText = newPrice; // ✅ Mise à jour en temps réel du prix affiché
-        costEl.setAttribute("data-current-price", newPrice); // ✅ Stockage du prix actuel
+        costEl.innerText = newPrice; // ✅ Mise à jour visuelle
+        costEl.setAttribute("data-current-price", newPrice); // ✅ Stockage du prix affiché
 
-        console.log("✔️ Prix mis à jour avec un multiplicateur de :", multiplier);
+        // 🔥 Mise à jour du prix réel dans `currentPrices`
+        let type = el.querySelector("button").classList[1].replace("btn-", "");
+        currentPrices[type] = newPrice;
+
+        console.log(`✔️ Prix mis à jour pour ${type} : ${newPrice} (multiplicateur: ${multiplier})`);
     });
 }
 
@@ -142,10 +114,32 @@ function applyPollutionEffects() {
     let pointsVertMultiplier = 1;
     let xpMultiplier = 1;
 
+
+        // ✅ Pollution < 30% → Bonus XP x1.5
+        if (pollution < 30) {
+            xpMultiplier = 1.5;
+            if (!lowPollutionBonusActive) {
+                lowPollutionBonusActive = true;
+                addEvent("🟢 XP Boost !");
+            }
+        } else if (lowPollutionBonusActive) {
+            lowPollutionBonusActive = false;
+            addEvent("🟢 Terminé !");
+        }
+
+        
     // ✅ MALUS BONUS si pollution entre 30% et 50% : XP réduit mais plus de points verts
     if (pollution >= 30 && pollution < 50) {
-        pointsVertMultiplier = 2; // +50% de points verts
+        pointsVertMultiplier = 2; // +100% de points verts
         xpMultiplier = 0.5; // -50% d'XP
+
+        if (!mediumPollutionMalusActive) {
+            mediumPollutionMalusActive = true;
+            addEvent("🔵 +Points verts, -XP !");
+        }
+        } else if (mediumPollutionMalusActive) {
+        mediumPollutionMalusActive = false;
+        addEvent(" 🔵 Terminé !");
     }
 
     // ✅ Mettre à jour les multiplicateurs SANS modifier `handleClick`
@@ -261,8 +255,18 @@ setTimeout(() => document.body.classList.remove("flash-reset"), 500);
         lastPurchaseTime[type] = 0;
     });
 
+    document.getElementById("eventLog").innerHTML = "";
+
+
     // ✅ Mise à jour de l'affichage
     updateDisplay();
+        // ✅ Vider complètement les événements un par un
+        let eventLog = document.getElementById("eventLog");
+        while (eventLog.firstChild) {
+            eventLog.removeChild(eventLog.firstChild);
+        }
+        // ✅ Mise à jour de l'affichage
+        updateDisplay();
 
     // 🎉 Ajoute un événement "Réinitialisation"
     addEvent("🔄 Jeu réinitialisé !");
@@ -305,8 +309,10 @@ function clampPollution() {
 }
 
 
-function buyUpgrade(vertCost, innoCost, energyCost, type) {
+function buyUpgrade(_, innoCost, energyCost, type) {
     let now = Date.now();
+
+    let vertCost = currentPrices[type]; // ✅ Utilisation du prix mis à jour
 
     if (score >= vertCost && innovation >= innoCost && energy >= energyCost) {
         // ✅ Déduction des ressources
@@ -315,17 +321,16 @@ function buyUpgrade(vertCost, innoCost, energyCost, type) {
         energy -= energyCost;
 
         // ✅ Ajout de l'élément acheté
-        if (type === 'trees') trees++; pollution -= 0.3;
-        if (type === 'solar') solar++; pollution += 0.5;
-        if (type === 'windTurbines') windTurbines++; pollution += 0.7;
-        if (type === 'hydroPlants') hydroPlants++; pollution += 1;
-        if (type === 'researchCenter') researchCenter++; pollution += 1.5;
+        if (type === 'trees') { trees++; pollution -= 0.3; }
+        if (type === 'solar') { solar++; pollution += 0.5; }
+        if (type === 'windTurbines') { windTurbines++; pollution += 0.7; }
+        if (type === 'hydroPlants') { hydroPlants++; pollution += 1; }
+        if (type === 'researchCenter') { researchCenter++; pollution += 1.5; }
 
-        
         // ✅ Vérification de la pollution après modification
         clampPollution();
 
-         // 🔊 Joue le son d'achat
+        // 🔊 Joue le son d'achat
         document.getElementById("buySound").play();
         
         // ✅ Enregistre le temps d'achat
@@ -339,6 +344,7 @@ function buyUpgrade(vertCost, innoCost, energyCost, type) {
         showErrorPopup("❌ Pas assez de ressources !");
     }
 }
+
 
 
 function startCooldownVisual(type) {
@@ -642,17 +648,54 @@ setInterval(() => {
                     updateDisplay();
                     }, 1000);
 
-
                     function checkPollutionEffects() {
-                        if (pollution >= 100 && !pollutionCriticalTriggered) {
-                            addEvent("🌪 Pollution critique ! Production réduite !");
-                            pollutionCriticalTriggered = true; // ✅ Bloque l'affichage jusqu'à ce que la pollution redescende
-                            score -= 2; // Perd des points verts en cas de pollution extrême
-                        } 
+                        let previousState = { 
+                            highPollutionCost: highPollutionCostIncreaseActive,
+                            pollutionCritical: pollutionCriticalTriggered
+                        };
                     
-                        if (pollution < 100 && pollutionCriticalTriggered) {
-                            pollutionCriticalTriggered = false; // ✅ Permet de réafficher l'alerte si ça remonte à 100 plus tard
+                        // ✅ Ajuste les prix si la pollution dépasse 50%
+                        if (pollution >= 50) {
+                            if (!highPollutionCostIncreaseActive) {
+                                highPollutionCostIncreaseActive = true;
+                                adjustUpgradePrices(1.2); // 📈 Augmente les prix
+                                addEvent("📈 Prix augmentés !");
+                            }
+                        } else {
+                            if (highPollutionCostIncreaseActive) {
+                                highPollutionCostIncreaseActive = false;
+                                adjustUpgradePrices(1); // 📉 Remet les prix normaux
+                                addEvent("📉 Prix normaux.");
+                            }
                         }
                     
-                        if (pollution < 0) pollution = 0; // On évite une pollution négative
+                        // ✅ Pollution entre 70% et 100% → Malus XP
+                        if (pollution >= 70) {
+                            if (!veryHighPollutionMalusActive) {
+                                veryHighPollutionMalusActive = true;
+                                addEvent("⚠ Moins d'XP !");
+                            }
+                        } else {
+                            if (veryHighPollutionMalusActive) {
+                                veryHighPollutionMalusActive = false;
+                                addEvent("✔ XP normal.");
+                            }
+                        }
+                    
+                        // ✅ Pollution critique à 100% → Game Over
+                        if (pollution >= 100 && !pollutionCriticalTriggered) {
+                            pollutionCriticalTriggered = true;
+                            addEvent("💀 Pollution MAX !");
+                            showGameOverPopup();
+                        } 
+                    
+                        // // ✅ Pollution redescend sous 100%
+                        // if (pollution < 90 && pollutionCriticalTriggered) {
+                        //     pollutionCriticalTriggered = false;
+                        //     addEvent("✅ Pollution en baisse.");
+                        // }
+                    
+                        // ✅ Vérifie que la pollution ne dépasse pas les limites
+                        if (pollution < 0) pollution = 0;
                     }
+                    
